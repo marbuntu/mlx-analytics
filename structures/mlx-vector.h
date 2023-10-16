@@ -114,15 +114,27 @@ namespace mlx
         }
 
 
+        void set(size_t idx, T value)
+        {
+            if (idx >= _inner.size()) return;
+            _inner[idx] = value;
+        }
+
+
         size_t size() const
         {
             return _inner.size();
         }
 
 
+        /**
+         * @brief   Set Each Vector Element to Value
+         * 
+         * @param value 
+         */
         void fill(T value)
         {
-            std::fill(_inner.begin(), _inner.end(), value);
+            std::fill(std::begin(_inner), std::end(_inner), value);
         }
 
 
@@ -152,6 +164,53 @@ namespace mlx
 
     /// ARITHMETIC FUNCTIONS
 
+        MlxVector<T> operator+ (const T value) const
+        {
+            std::valarray<T> vec = _inner + value;
+            return MlxVector<T>(vec);
+        }
+
+
+        MlxVector<T> operator+ (const MlxVector<T> other) const
+        {
+            if (_inner.size() != other.size()) return MlxVector<T>(other.size());
+
+            MlxVector<T> vec(_inner);
+            vec += other;
+            return vec;
+        }
+
+
+        MlxVector<T> &operator+= (const T value)
+        {
+            _inner += value;
+            return *this;
+        }
+
+
+        MlxVector<T> &operator+= (const MlxVector<T> other)
+        {
+            if (_inner.size() != other.size()) return *this;
+
+            _inner += other._inner;
+            return *this;
+        }
+
+
+        MlxVector<T> operator- (const T value) const
+        {
+            std::valarray<T> vec = _inner - value;
+            return MlxVector<T>(vec);
+        }
+
+
+        MlxVector<T> &operator-= (const T value)
+        {
+            _inner -= value;
+            return *this;
+        }
+
+
         MlxVector<T> operator* (const T value) const
         {
             std::valarray<T> vec = _inner * value;
@@ -161,7 +220,7 @@ namespace mlx
 
         MlxVector<T> operator* (const MlxVector<T>& other) const
         {
-            if (other->size() != _inner.size()) return MlxVector<T>(1);
+            if (other->size() != _inner.size()) return MlxVector<T>(other.size());
 
             MlxVector<T> vect(_inner);
             vect *= other;
@@ -315,9 +374,30 @@ namespace mlx
         }
 
 
+        gsl_vector* toGslVector() const
+        {
+            //std::shared_ptr<gsl_vector> ptr = std::make_shared<gsl_vector>();
+            gsl_vector *ptr = gsl_vector_alloc(_inner.size());
+            memcpy(ptr->data, &_inner[0], sizeof(T) * _inner.size());
+        
+            return ptr;
+        }
 
 
-    private:
+        auto begin()
+        {
+            return std::begin(_inner);
+        }
+
+
+        auto end()
+        {
+            return std::end(_inner); 
+        }
+
+
+
+    protected:
 
         /**
          * @brief   Internal Array
@@ -326,6 +406,8 @@ namespace mlx
         std::valarray<T> _inner;
     
     
+    private:
+
         /* Construction Helpers */
         void _checkType()
         {
@@ -337,12 +419,14 @@ namespace mlx
         void _fromFixdLength(size_t length)
         {
             _inner = std::valarray<T>(length);
+            this->fill(0);
         }
 
 
         void _fromStdVector(const std::vector<T>& vect)
         {
-            _inner = std::valarray<T>(vect);
+            _inner = std::valarray<T>(vect.size());
+            std::copy(vect.begin(), vect.end(), std::begin(_inner));
         }
 
 
@@ -575,15 +659,15 @@ namespace mlx
 
 
     template <class T>
-    class MlxWindow final : public MlxFixedVector<T>
+    class MlxWindow final : public MlxVector<T>
     {
     public:
         
-        MlxWindow(size_t width) : MlxFixedVector<T>(width) { };
+        MlxWindow(size_t width) : MlxVector<T>(width) { };
 
-        MlxWindow(const std::vector<T>& vect) : MlxFixedVector<T>(vect) { };
+        MlxWindow(const std::vector<T>& vect) : MlxVector<T>(vect) { };
 
-        MlxWindow(const gsl_vector* vect) : MlxFixedVector<T>(vect) { };
+        MlxWindow(const gsl_vector* vect) : MlxVector<T>(vect) { };
 
         ~MlxWindow() { };
 
@@ -595,10 +679,10 @@ namespace mlx
          */
         void moveLeft(size_t N)
         {
-            if (N >= MlxFixedVector<T>::_vector.size()) return;
+            if (N >= MlxVector<T>::_inner.size()) return;
 
             _shiftLeft(N);
-            std::fill(MlxFixedVector<T>::_vector.end() - N, MlxFixedVector<T>::_vector.end(), 0);
+            std::fill( std::end(MlxVector<T>::_inner) - N, std::end(MlxVector<T>::_inner), 0);
         }
 
 
@@ -609,10 +693,10 @@ namespace mlx
          */
         void moveRight(size_t N)
         {
-            if (N >= MlxFixedVector<T>::_vector.size()) return;
+            if (N >= MlxVector<T>::_vector.size()) return;
 
             _shiftRight(N);
-            std::fill(MlxFixedVector<T>::_vector.begin(), MlxFixedVector<T>::_vector.begin() + N, 0);
+            std::fill( std::begin(MlxVector<T>::_inner), std::begin(MlxVector<T>::_inner) + N, 0);
         }
 
 
@@ -625,10 +709,10 @@ namespace mlx
         {
             size_t N = vect.size();
 
-            if (N > MlxFixedVector<T>::_vector.size()) return;
+            if (N > MlxVector<T>::_inner.size()) return;
 
             _shiftLeft(N);
-            std::copy(vect.begin(), vect.end(), MlxFixedVector<T>::_vector.end() - N);
+            std::copy(vect.begin(), vect.end(), std::end(MlxVector<T>::_inner) - N);
         }
 
 
@@ -641,10 +725,10 @@ namespace mlx
         {
             size_t N = vect.size();
 
-            if (N > MlxFixedVector<T>::_vector.size()) return;
+            if (N > MlxVector<T>::_inner.size()) return;
 
             _shiftRight(N);
-            std::copy(vect.begin(), vect.end(), MlxFixedVector<T>::_vector.begin());
+            std::copy(vect.begin(), vect.end(), std::begin(MlxVector<T>::_inner));
         }
 
 
@@ -652,13 +736,13 @@ namespace mlx
 
         void _shiftLeft(size_t N)
         {
-            std::copy(MlxFixedVector<T>::_vector.begin() + N, MlxFixedVector<T>::_vector.end(), MlxFixedVector<T>::_vector.begin());
+            std::copy( std::begin(MlxVector<T>::_inner) + N, std::end(MlxVector<T>::_inner), std::begin(MlxVector<T>::_inner));
         }
 
 
         void _shiftRight(size_t N)
         {
-            std::copy(MlxFixedVector<T>::_vector.begin(), MlxFixedVector<T>::_vector.end() - N, MlxFixedVector<T>::_vector.begin() + N);
+            std::copy( std::begin(MlxVector<T>::_inner), std::end(MlxVector<T>::_inner) - N, std::begin(MlxVector<T>::_inner) + N);
         }
 
 

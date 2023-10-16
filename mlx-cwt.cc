@@ -56,13 +56,13 @@ namespace mlx {
     }
 
 
-    std::shared_ptr<MlxFixedVector<double>> MlxWaveletTransformation::WVT_1D(const MlxFixedVector<double> &signal)
+    std::shared_ptr<MlxDoubleVector> MlxWaveletTransformation::WVT_1D(const MlxDoubleVector &signal)
     {
         gsl_vector *inp = signal.toGslVector();
 
         gsl_wavelet_transform_forward(_wavelet, inp->data, 1, inp->size, _wrk);
 
-        std::shared_ptr<MlxFixedVector<double>> res = std::make_shared<MlxFixedVector<double>>(inp);
+        std::shared_ptr<MlxDoubleVector> res = std::make_shared<MlxDoubleVector>(inp);
     
         gsl_vector_free(inp);
 

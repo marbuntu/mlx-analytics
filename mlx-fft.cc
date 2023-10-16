@@ -81,7 +81,7 @@ namespace mlx {
     }
 
 
-    std::shared_ptr<MlxFixedVector<double>> MlxMixedRadixRealFFT::normalizedMagnitude(MlxFixedVector<double> &signal)
+    std::shared_ptr<MlxDoubleVector> MlxMixedRadixRealFFT::normalizedMagnitude(MlxDoubleVector &signal)
     {
 
         gsl_vector* inp = signal.toGslVector();
@@ -93,7 +93,7 @@ namespace mlx {
         gsl_vector_mul(inp, inp);
 
 
-        std::shared_ptr<MlxFixedVector<double>> res = std::make_shared<MlxFixedVector<double>>(inp->size);
+        std::shared_ptr<MlxDoubleVector> res = std::make_shared<MlxDoubleVector>(inp->size);
 
         size_t i = 1;
         double factor = 2.0 / inp->size; /// (inp->size * inp->size);
@@ -118,7 +118,7 @@ namespace mlx {
     }
 
 
-    std::shared_ptr<MlxFixedVector<double>> MlxMixedRadixRealFFT::pwrSpectralDensity(MlxFixedVector<double> &signal, const double fs, const double df)
+    std::shared_ptr<MlxDoubleVector> MlxMixedRadixRealFFT::pwrSpectralDensity(MlxDoubleVector &signal, const double fs, const double df)
     {
 
         gsl_vector* inp = signal.toGslVector();
@@ -199,7 +199,7 @@ namespace mlx {
         //    i++;
         // }
 
-        std::shared_ptr<MlxFixedVector<double>> res = std::make_shared<MlxFixedVector<double>>(integ);
+        std::shared_ptr<MlxDoubleVector> res = std::make_shared<MlxDoubleVector>(integ);
 
         return res;
     }

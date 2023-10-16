@@ -62,9 +62,9 @@ namespace mlx
          * 
          * @param   signal    Input Signal
          * @param   fs        Sample Frequency
-         * @return  std::shared_ptr<MlxFixedVector<double>>
+         * @return  std::shared_ptr<MlxDoubleVector>
          */
-        static std::shared_ptr<MlxFixedVector<double>> FFTMagnitude(MlxFixedVector<double> &signal, const double fs); 
+        static std::shared_ptr<MlxDoubleVector> FFTMagnitude(MlxDoubleVector &signal, const double fs); 
 
 
         /**
@@ -72,9 +72,9 @@ namespace mlx
          * 
          * @param   signal     Input Signal
          * @param   fs         Sample Frequency
-         * @return  std::shared_ptr<MlxFixedVector<double>> 
+         * @return  std::shared_ptr<MlxDoubleVector> 
          */
-        static std::shared_ptr<MlxFixedVector<double>> FFTFrequencies(MlxFixedVector<double> &signal, const double fs);
+        static std::shared_ptr<MlxDoubleVector> FFTFrequencies(MlxDoubleVector &signal, const double fs);
 
 
         /**
@@ -83,10 +83,10 @@ namespace mlx
          * @param   signal    Input Signal
          * @param   fs        Sample Frequency
          * @param   df        Spectral Resolution for Power Density - if 0, standard fft spectral resolution is returned
-         * @return  std::shared_ptr<MlxFixedVector<double>> 
+         * @return  std::shared_ptr<MlxDoubleVector> 
          */
-        //static std::shared_ptr<MlxFixedVector<double>> PowerSpectralDensity(MlxFixedVector<double> &signal, const double fs);
-        static std::shared_ptr<MlxFixedVector<double>> PowerSpectralDensity(MlxFixedVector<double> &signal, const double fs, const double df);
+        //static std::shared_ptr<MlxDoubleVector> PowerSpectralDensity(MlxDoubleVector &signal, const double fs);
+        static std::shared_ptr<MlxDoubleVector> PowerSpectralDensity(MlxDoubleVector &signal, const double fs, const double df);
 
 
         static std::shared_ptr<MlxVector<double>> WVT(std::shared_ptr<MlxDoubleVector> signal, double fs);

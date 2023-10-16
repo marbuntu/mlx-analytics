@@ -53,7 +53,7 @@ public:
     void outputWvt(std::ofstream &fst, size_t padding) const;
 
 
-    std::shared_ptr<MlxFixedVector<double>> WVT_1D(const MlxFixedVector<double> &signal);
+    std::shared_ptr<MlxDoubleVector> WVT_1D(const MlxDoubleVector &signal);
 
 
 

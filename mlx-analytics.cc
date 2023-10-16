@@ -98,7 +98,7 @@ namespace mlx
     }
 */
 
-    std::shared_ptr<MlxFixedVector<double>> MlxAnalyticsInterface::FFTFrequencies(MlxFixedVector<double> &signal, const double fs)
+    std::shared_ptr<MlxDoubleVector> MlxAnalyticsInterface::FFTFrequencies(MlxDoubleVector &signal, const double fs)
     {
         std::vector<double> frqs;
         frqs.resize(signal.size());
@@ -112,23 +112,23 @@ namespace mlx
             f += df;
         }
 
-        return std::make_shared<MlxFixedVector<double>>(frqs);
+        return std::make_shared<MlxDoubleVector>(frqs);
     }
 
 
-    std::shared_ptr<MlxFixedVector<double>> MlxAnalyticsInterface::FFTMagnitude(MlxFixedVector<double> &signal, const double fs)
+    std::shared_ptr<MlxDoubleVector> MlxAnalyticsInterface::FFTMagnitude(MlxDoubleVector &signal, const double fs)
     {
         MlxMixedRadixRealFFT *_fft = _getFFTWorkspace(signal.size());
         return _fft->normalizedMagnitude(signal);
     }
 
 /*
-    std::shared_ptr<MlxFixedVector<double>> MlxAnalyticsInterface::PowerSpectralDensity(MlxFixedVector<double> &signal, const double fs)
+    std::shared_ptr<MlxDoubleVector> MlxAnalyticsInterface::PowerSpectralDensity(MlxDoubleVector &signal, const double fs)
     {
     }
 */  
 
-    std::shared_ptr<MlxFixedVector<double>> MlxAnalyticsInterface::PowerSpectralDensity(MlxFixedVector<double> &signal, const double fs, const double df)
+    std::shared_ptr<MlxDoubleVector> MlxAnalyticsInterface::PowerSpectralDensity(MlxDoubleVector &signal, const double fs, const double df)
     {
 
         MlxMixedRadixRealFFT *_fft = _getFFTWorkspace(signal.size());      
