@@ -55,7 +55,7 @@ namespace mlx
 
         bool apply(const gsl_vector *input, gsl_vector *output);
 
-        bool apply(const std::shared_ptr<MlxVector> input, std::shared_ptr<MlxVector> output);
+        bool apply(const std::shared_ptr<MlxDoubleVector> input, std::shared_ptr<MlxDoubleVector> output);
 
 
     protected:

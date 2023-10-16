@@ -14,7 +14,7 @@
  */
 
 
-#include "mlx-vector.h"
+//#include "mlx-vector.h"
 
 #include <cstring>
 #include <algorithm>
@@ -22,7 +22,49 @@
 
 namespace mlx
 {
+    /*
+    template <class T>
+    MlxVector<T>::MlxVector(size_t length)
+    {
 
+        //_inner = std::valarray<std::string>(10);
+    }
+
+
+    template <class T>
+    MlxVector<T>::MlxVector(const std::vector<T>& vect)
+    {
+
+
+    }
+
+
+    template <class T>
+    MlxVector<T>::MlxVector(const gsl_vector* vect)
+    {
+
+    
+    }
+    */
+
+    template <class T>
+    void MlxVector<T>::_checkType()
+    {
+        //static_assert(
+        //    std::is_arithmetic<T>::value, "Template Argument for MlxVector must be of Arithmetic-Type!"
+        //);
+
+    }
+
+    /*
+    template <class T>
+    MlxVector<T>::~MlxVector()
+    {
+
+    }
+    */
+
+/*
     MlxVector::MlxVector(size_t size)
     : _vector(nullptr)
     {
@@ -111,7 +153,7 @@ namespace mlx
         }
     }
 
-
+*/
 
 /// Start - MlxWindow
 

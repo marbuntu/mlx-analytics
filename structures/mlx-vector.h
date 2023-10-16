@@ -16,6 +16,7 @@
 
 #pragma once
 
+#include <valarray>
 #include <iostream>
 #include <vector>
 #include <memory>
@@ -25,53 +26,364 @@
 #include <gsl/gsl_vector.h>
 
 
+#define _min(x, y) (x < y ? x : y)
+#define _max(x, y) (x > y ? x : y)
+
+
 namespace mlx
 {
 
-    template <typename T>
-    class MlxValArray final : public std::valarray<T>
-    {
-
-    };
-
-    class MlxVector final
+    template <class T>
+    class MlxVector
     {
     public:
-        MlxVector(size_t size);
-        MlxVector(const std::vector<double> vect);
+        MlxVector(size_t length)
+        {
+            _checkType();
+            _fromFixdLength(length);
+        }
 
-        ~MlxVector();
 
-        size_t size() const;
-        double at(size_t idx) const;
-        void push_back(double value);
-        double pop_back();
-        std::vector<double> toStdVector() const;
-        gsl_vector* getGslVector() const;
+        MlxVector(const std::vector<T>& vect)
+        {
+            _checkType();
+            _fromStdVector(vect);
+        }
 
-        void reset();
+
+        MlxVector(const gsl_vector* vect)
+        {
+            _checkType();
+            _fromGslVector(vect);
+        }
+
+
+        MlxVector(const std::valarray<T>& vect)
+        {
+            _checkType();
+            _inner = std::valarray<T>(vect);
+        }
+
+
+
+        ~MlxVector()
+        {
+
+        }
+
+    /// VECTOR MODIFIERS
+
+        MlxVector<T> slice(size_t str, size_t end)
+        {
+            //MlxVector<T> slc(_inner[std::slice(str, end - str, 1)]);
+            return slice(str, end, 1);
+        }
+
+
+        MlxVector<T> slice(size_t str, size_t end, size_t stride)
+        {
+            MlxVector<T> slc(_inner[ std::slice( _min(str, end), _max(str, end) - _min(str, end), stride ) ]    );
+
+            if (end < str) 
+            {
+                slc.reverse();
+            }
+
+            return slc;
+        }
+
+
+        T &operator[] (size_t idx)
+        {
+            if ((idx < 0 ) || (idx >= _inner.size()))
+            {
+                return _inner[0];
+            }
+
+            return _inner[idx];
+        }
+
+        T at(size_t idx) const
+        {
+            if ((idx < 0 ) || (idx >= _inner.size()))
+            {
+                return _inner[0];
+            }
+
+            return _inner[idx];
+        }
+
+
+        size_t size() const
+        {
+            return _inner.size();
+        }
+
+
+        void fill(T value)
+        {
+            std::fill(_inner.begin(), _inner.end(), value);
+        }
+
+
+        /**
+         * @brief   Reverse Operation applied to this MlxVector Object
+         * 
+         */
+        void reverse()
+        {
+            std::reverse(std::begin(_inner), std::end(_inner));
+        }
+
+
+        /**
+         * @brief   Returns a Reversed Copy of the Vector Object
+         * 
+         * @return MlxVector<T> Reversed Copy
+         */
+        MlxVector<T> reversed() const
+        {
+            MlxVector<T> rev(*this);
+            rev.reverse();
+            return rev;
+        }
+
+
+
+    /// ARITHMETIC FUNCTIONS
+
+        MlxVector<T> operator* (const T value) const
+        {
+            std::valarray<T> vec = _inner * value;
+            return MlxVector<T>(vec);
+        }
+
+
+        MlxVector<T> operator* (const MlxVector<T>& other) const
+        {
+            if (other->size() != _inner.size()) return MlxVector<T>(1);
+
+            MlxVector<T> vect(_inner);
+            vect *= other;
+            return vect;
+        }
+
+
+        MlxVector<T> &operator *= (const T value)
+        {
+            _inner *= value;
+            return *this;
+        }
+
+
+        MlxVector<T> &operator *= (const MlxVector<T>& other)
+        {
+            if (other.size() != _inner.size()) return *this;
+
+            _inner *= other._inner;
+
+            return *this;
+        }
+
+
+
+    /// GENERAL FUNCTIONS
+
+
+        /**
+         * @brief   Get Vector Sum
+         * 
+         * @return T 
+         */
+        T sum() const
+        {
+            return _inner.sum();
+        }
+
+
+        /**
+         * @brief   Get Minimum Element Value
+         * 
+         * @return T 
+         */
+        T min() const
+        {
+            return _inner.min();
+        }
+
+
+        /**
+         * @brief   Get Minimum Element Index
+         * 
+         * @return size_t 
+         */
+        size_t arg_min() const
+        {
+            return std::min_element(std::begin(_inner), std::end(_inner)) - std::begin(_inner);
+        }
+
+
+        /**
+         * @brief   Get Maximum Element Value
+         * 
+         * @return T 
+         */
+        T max() const
+        {
+            return _inner.max();
+        }
+
+
+        /**
+         * @brief   Get Maximum Element Index
+         * 
+         * @return size_t 
+         */
+        size_t arg_max() const
+        {
+            return std::max_element(std::begin(_inner), std::end(_inner)) - std::begin(_inner);
+        }
+
+
+        /**
+         * @brief   Calculate Vector Mean 
+         * 
+         * @return double 
+         */
+        double mean() const
+        {
+            return _inner.sum() / _inner.size();
+        }
+
+
+        /**
+         * @brief   Calculate Vector Median
+         * 
+         * @return T 
+         */
+        T median() const
+        {
+            std::valarray<T> ocp = std::valarray<T>(_inner);
+            auto m = std::begin(ocp) + ocp.size() / 2;
+            std::nth_element(std::begin(ocp), m, std::end(ocp));
+            return ocp[_inner.size() / 2];
+        }
+
+        
+        /**
+         * @brief   Calculate Vector Variance
+         * 
+         * @return double 
+         */
+        double variance() const
+        {
+            double mean = this->mean();
+            std::valarray<T> cp = std::pow((_inner - mean), 2);
+            return cp.sum() / cp.size();
+        }
+
+
+        /**
+         * @brief   Calculate Vector Standard Deviation
+         * 
+         * @return double 
+         */
+        double stddev() const
+        {
+            return std::sqrt(this->variance());
+        }
+
+
+        /**
+         * @brief   Reset All Elements to Zero
+         * 
+         */
+        void reset()
+        {
+            fill(0);
+        }
+
+
+        /**
+         * @brief   Prints the Array to Stream COUT
+         * 
+         */
+        void dumpcout()
+        {
+            for (const auto& v : _inner) std::cout << v << "\t";
+            std::cout << "\n";
+        }
+
+
 
 
     private:
 
-        void _fromStdVector(const std::vector<double> vect);
-        void _allocVector(size_t size);
-        void _freeVector();
+        /**
+         * @brief   Internal Array
+         * 
+         */
+        std::valarray<T> _inner;
+    
+    
+        /* Construction Helpers */
+        void _checkType()
+        {
+            static_assert(
+                std::is_arithmetic<T>::value, "Template Argument for MlxVector must be of Arithmetic Type!"
+            );
+        }
         
-        gsl_vector *_vector;
-        std::vector<double> _inner;
+        void _fromFixdLength(size_t length)
+        {
+            _inner = std::valarray<T>(length);
+        }
+
+
+        void _fromStdVector(const std::vector<T>& vect)
+        {
+            _inner = std::valarray<T>(vect);
+        }
+
+
+        void _fromGslVector(const gsl_vector* vect)
+        {
+            if (typeid(T) != typeid(vect->data[0]))
+            {
+                std::cerr << __FUNCTION__ << "\t ERROR - Construction Vector must be of same numeric Type!\n";
+            }
+
+            _inner = std::valarray<T>(vect->size);
+            for (size_t n = 0; n < vect->size; n++) _inner[n] = vect->data[n];
+            
+            //memcpy(_inner.data(), vect->data, sizeof(T) * vect->size);
+        }
+        
+
+
+        /* Shift Functions */
+        void _shiftLeft(size_t N)
+        {
+            std::copy(_inner.begin() + N, _inner.end(), _inner._vector.begin());
+        }
+
+
+        void _shiftRight(size_t N)
+        {
+            std::copy(_inner.begin(), _inner.end() - N, _inner.begin() + N);
+        }
+
+
+
+
+
 
 
     };  /* MlxVector */
 
-    class MlxComplexVector final
-    {
-    public:
-        MlxComplexVector();
-        MlxComplexVector(const std::vector<double> real, const std::vector<double> imag);
 
-        ~MlxComplexVector();
-    };  /* MlxComplexVector */
+    typedef MlxVector<double>   MlxDoubleVector;
+    typedef MlxVector<long>     MlxLongVector;
 
 
 

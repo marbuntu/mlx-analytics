@@ -115,12 +115,12 @@ namespace mlx
         return true;
     }
 
-
-    bool MlxGaussianFilter::apply(const std::shared_ptr<MlxVector> input, std::shared_ptr<MlxVector> output)
+/*
+    bool MlxGaussianFilter::apply(const std::shared_ptr<MlxDoubleVector> input, std::shared_ptr<MlxDoubleVector> output)
     {
         return apply(input->getGslVector(), output->getGslVector());
     }
-
+*/
 
     void MlxGaussianFilter::_initializeWorkspace()
     {

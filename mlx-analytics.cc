@@ -43,6 +43,7 @@ namespace mlx
     }
 
 
+/*
     bool MlxAnalyticsInterface::setInputVectors(const std::vector<double> vec_time, const std::vector<double> vec_values)
     {
         _time = std::make_shared<MlxVector>(vec_time);
@@ -95,7 +96,7 @@ namespace mlx
 
         return std::make_shared<MlxVector>(res);;
     }
-
+*/
 
     std::shared_ptr<MlxFixedVector<double>> MlxAnalyticsInterface::FFTFrequencies(MlxFixedVector<double> &signal, const double fs)
     {

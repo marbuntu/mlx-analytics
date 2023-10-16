@@ -38,12 +38,12 @@ namespace mlx
 
 
         bool setInputVectors(const std::vector<double> vec_time, const std::vector<double> vec_values);
-        bool setInputVectors(const MlxVector &vec_time, const MlxVector &vec_values);
+        bool setInputVectors(const MlxVector<double> &vec_time, const MlxVector<double> &vec_values);
 
 
-        bool applyGaussianFilter(std::shared_ptr<MlxVector> out) const;
+        bool applyGaussianFilter(std::shared_ptr<MlxVector<double>> out) const;
 
-        bool applyFFT(std::shared_ptr<MlxVector> out) const;
+        bool applyFFT(std::shared_ptr<MlxVector<double>> out) const;
 
 
         /**
@@ -54,7 +54,7 @@ namespace mlx
          * @param cutoff    CutOff Frequency
          * @return          Smoothened Signal Vector 
          */
-        static std::shared_ptr<MlxVector> smoothening(std::shared_ptr<MlxVector> signal, double fs, double cutoff);
+        static std::shared_ptr<MlxVector<double>> smoothening(std::shared_ptr<MlxVector<double>> signal, double fs, double cutoff);
 
 
         /**
@@ -89,14 +89,14 @@ namespace mlx
         static std::shared_ptr<MlxFixedVector<double>> PowerSpectralDensity(MlxFixedVector<double> &signal, const double fs, const double df);
 
 
-        static std::shared_ptr<MlxVector> WVT(std::shared_ptr<MlxVector> signal, double fs);
+        static std::shared_ptr<MlxVector<double>> WVT(std::shared_ptr<MlxDoubleVector> signal, double fs);
 
 
-        static std::shared_ptr<MlxVector> detectPeaks(std::shared_ptr<MlxVector> signal);
+        static std::shared_ptr<MlxVector<double>> detectPeaks(std::shared_ptr<MlxDoubleVector> signal);
 
 
 
-        static std::shared_ptr<MlxVector> filtfilt(std::shared_ptr<MlxVector> signal, std::shared_ptr<MlxSOSFilter> filter);
+        static std::shared_ptr<MlxVector<double>> filtfilt(std::shared_ptr<MlxDoubleVector> signal, std::shared_ptr<MlxSOSFilter> filter);
 
         
 
@@ -105,8 +105,8 @@ namespace mlx
         MlxAnalyticsInterface();
         ~MlxAnalyticsInterface();
         
-        std::shared_ptr<MlxVector> _time;
-        std::shared_ptr<MlxVector> _vals;
+        std::shared_ptr<MlxDoubleVector> _time;
+        std::shared_ptr<MlxDoubleVector> _vals;
 
         /* Managing of FFT Workspaces */
         static std::unordered_map<size_t, MlxMixedRadixRealFFT*> _fft_real_workspaces;
