@@ -98,7 +98,7 @@ namespace mlx
     }
 */
 
-    std::shared_ptr<MlxDoubleVector> MlxAnalyticsInterface::FFTFrequencies(MlxDoubleVector &signal, const double fs)
+    std::shared_ptr<MlxDoubleVector> MlxAnalyticsInterface::FFTFrequencies(const MlxDoubleVector &signal, const double fs)
     {
         std::vector<double> frqs;
         frqs.resize(signal.size());
@@ -116,7 +116,7 @@ namespace mlx
     }
 
 
-    std::shared_ptr<MlxDoubleVector> MlxAnalyticsInterface::FFTMagnitude(MlxDoubleVector &signal, const double fs)
+    std::shared_ptr<MlxDoubleVector> MlxAnalyticsInterface::FFTMagnitude(const MlxDoubleVector &signal, const double fs)
     {
         MlxMixedRadixRealFFT *_fft = _getFFTWorkspace(signal.size());
         return _fft->normalizedMagnitude(signal);
@@ -128,7 +128,7 @@ namespace mlx
     }
 */  
 
-    std::shared_ptr<MlxDoubleVector> MlxAnalyticsInterface::PowerSpectralDensity(MlxDoubleVector &signal, const double fs, const double df)
+    std::shared_ptr<MlxDoubleVector> MlxAnalyticsInterface::PowerSpectralDensity(const MlxDoubleVector &signal, const double fs, const double df)
     {
 
         MlxMixedRadixRealFFT *_fft = _getFFTWorkspace(signal.size());      
@@ -142,7 +142,7 @@ namespace mlx
 
         if (auto search = _fft_real_workspaces.find(length); search != _fft_real_workspaces.end())
         {
-            std::cout << "Using existing FFT Workspace!\n";
+            //std::cout << "Using existing FFT Workspace!\n";
 
             // Workspace with given Length already exists
             return search->second;
@@ -157,7 +157,7 @@ namespace mlx
                 std::make_pair(length, _newWorkspace)
             );
 
-            std::cout << "Creating new FFT Workspace!\n";
+            //std::cout << "Creating new FFT Workspace!\n";
 
             return _newWorkspace;
         }

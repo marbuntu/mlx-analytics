@@ -5,6 +5,7 @@ file(GLOB
     MLX_ANALYTICS_SRC_FILES
     #${CMAKE_CURRENT_SOURCE_DIR}/structures/mlx-vector.cc
     #${CMAKE_CURRENT_SOURCE_DIR}/operators/mlx-operators.cc
+    ${CMAKE_CURRENT_SOURCE_DIR}/operators/mlx-window-statistics.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/wavelets/mlx-wvt-gauss.c
     ${CMAKE_CURRENT_SOURCE_DIR}/mlx-fft.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/mlx-cwt.cc

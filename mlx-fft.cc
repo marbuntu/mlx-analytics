@@ -81,7 +81,7 @@ namespace mlx {
     }
 
 
-    std::shared_ptr<MlxDoubleVector> MlxMixedRadixRealFFT::normalizedMagnitude(MlxDoubleVector &signal)
+    std::shared_ptr<MlxDoubleVector> MlxMixedRadixRealFFT::normalizedMagnitude(const MlxDoubleVector &signal)
     {
 
         gsl_vector* inp = signal.toGslVector();
@@ -118,7 +118,7 @@ namespace mlx {
     }
 
 
-    std::shared_ptr<MlxDoubleVector> MlxMixedRadixRealFFT::pwrSpectralDensity(MlxDoubleVector &signal, const double fs, const double df)
+    std::shared_ptr<MlxDoubleVector> MlxMixedRadixRealFFT::pwrSpectralDensity(const MlxDoubleVector &signal, const double fs, const double df)
     {
 
         gsl_vector* inp = signal.toGslVector();
@@ -130,24 +130,8 @@ namespace mlx {
         gsl_vector_mul(inp, inp);
        
 
-        // double sr = fs / (2.0 * signal.size());
-
-        // size_t ns = size_t (0.5 * df / sr);
-        // size_t ne = size_t (1.5 * df / sr);
-
-        // if ((ns * sr) < (df * 0.5)) ns++;
-        
-        // if ((ne * sr) >= (df * 1.5)) ne--;
-
-        // std::cout << "start: " << ns << "(" << ns * sr << ")" << "\n";
-        // std::cout << "end " << ne << "(" << ne * sr << ")\n";
-
-        // size_t i = 1;
-
         double factor = 2.0 / (inp->size); // * inp->size); /// (inp->size * inp->size);
         double val = 0 ; //factor * inp->data[0]; ///(inp->data[0] * inp->data[0]);
-        // res->set(0, val);
-        // res->set(res->size()-1, val);
 
         std::vector<double> integ;
 
@@ -158,46 +142,6 @@ namespace mlx {
             val = factor * abs(inp->data[n] + inp->data[n + 1]);
             integ.push_back(val);
         }   
-
-        // while (ns < inp->size)
-        // {
-
-        //     n = 0;
-        //     val = 0;
-
-        //     while ((( n * sr ) < (df * 1.5)) && (ns + n) < inp->size)
-        //     {
-        //         val += factor * sqrt(inp->data[ns + n] + inp->data[ns + n + 1]);
-        //         n += 2;
-        //     }
-
-        //     integ.push_back(val);
-        //     std::cout << "ns: " << ns << " \tne: " << ns + n << "\t" << val << "\n";
-
-        //     ns += (n + 1);
-
-        //     for (size_t n = ns; n <= (ne * i); n += 2)
-        //     {
-        //         val += factor * sqrt(inp->data[n] + inp->data[n+1]);
-        //     }
-            
-
-        //     ns = (ne * i) + 1;
-
-        //     integ.push_back(val);
-
-        // // }
-        // // for (size_t n = 1; n < inp->size; n += 2)
-        // // {
-
-
-        //     //val = factor * (inp->data[n] + inp->data[n+1]);
-
-        //     //res->set(i,val);
-        //     //res->set(inp->size - (1+i), val);
-
-        //    i++;
-        // }
 
         std::shared_ptr<MlxDoubleVector> res = std::make_shared<MlxDoubleVector>(integ);
 

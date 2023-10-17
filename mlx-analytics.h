@@ -64,7 +64,7 @@ namespace mlx
          * @param   fs        Sample Frequency
          * @return  std::shared_ptr<MlxDoubleVector>
          */
-        static std::shared_ptr<MlxDoubleVector> FFTMagnitude(MlxDoubleVector &signal, const double fs); 
+        static std::shared_ptr<MlxDoubleVector> FFTMagnitude(const MlxDoubleVector &signal, const double fs); 
 
 
         /**
@@ -74,7 +74,9 @@ namespace mlx
          * @param   fs         Sample Frequency
          * @return  std::shared_ptr<MlxDoubleVector> 
          */
-        static std::shared_ptr<MlxDoubleVector> FFTFrequencies(MlxDoubleVector &signal, const double fs);
+        static std::shared_ptr<MlxDoubleVector> FFTFrequencies(const MlxDoubleVector &signal, const double fs);
+
+        //static std::shared_ptr<MlxDoubleVector> FFTFrequencies(size_t signal_length, const double fs);
 
 
         /**
@@ -86,7 +88,7 @@ namespace mlx
          * @return  std::shared_ptr<MlxDoubleVector> 
          */
         //static std::shared_ptr<MlxDoubleVector> PowerSpectralDensity(MlxDoubleVector &signal, const double fs);
-        static std::shared_ptr<MlxDoubleVector> PowerSpectralDensity(MlxDoubleVector &signal, const double fs, const double df);
+        static std::shared_ptr<MlxDoubleVector> PowerSpectralDensity(const MlxDoubleVector &signal, const double fs, const double df);
 
 
         static std::shared_ptr<MlxVector<double>> WVT(std::shared_ptr<MlxDoubleVector> signal, double fs);

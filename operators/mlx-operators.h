@@ -2,6 +2,8 @@
 
 #include "../structures/mlx-vector.h"
 
+#pragma once
+
 namespace mlx
 {
     typedef enum

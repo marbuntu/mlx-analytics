@@ -68,7 +68,13 @@ namespace mlx
 
         ~MlxVector()
         {
-
+            if (_ref != nullptr) 
+            {
+                //free(_ref->block);
+                //free(_ref);
+                gsl_vector_free(_ref);
+                _ref = nullptr;
+            }
         }
 
     /// VECTOR MODIFIERS
@@ -483,13 +489,40 @@ namespace mlx
         }
 
 
+        /**
+         * @brief   Get a COPY of the Vector as GSL-Vector Pointer ( don't forget to free memory !!! )
+         * 
+         * @return gsl_vector* 
+         */
         gsl_vector* toGslVector() const
         {
-            //std::shared_ptr<gsl_vector> ptr = std::make_shared<gsl_vector>();
             gsl_vector *ptr = gsl_vector_alloc(_inner.size());
             memcpy(ptr->data, &_inner[0], sizeof(T) * _inner.size());
-        
+
             return ptr;
+        }
+
+
+        /**
+         * @brief   Access the Vector as GSL-Vector ( NO COPY !!! )
+         * 
+         * @return gsl_vector* 
+         */
+        gsl_vector* asGslVector()
+        {
+            if (_ref != nullptr) return _ref;
+
+            _ref = (gsl_vector*) calloc(1, sizeof(gsl_vector));
+
+            _ref->block = (gsl_block*) calloc(1, sizeof(gsl_block));
+            _ref->block->data = (double*) &_inner[0];
+            _ref->block->size = _inner.size();
+
+            _ref->data = _ref->block->data;
+            _ref->size = _ref->block->size;
+            _ref->stride = 1;
+        
+            return _ref;
         }
 
 
@@ -513,6 +546,13 @@ namespace mlx
          * 
          */
         std::valarray<T> _inner;
+
+
+        /**
+         * @brief   Reference to Internal Array as GSL-Vector
+         * 
+         */
+        gsl_vector *_ref = nullptr;
     
     
     private:

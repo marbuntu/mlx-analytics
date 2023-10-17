@@ -63,9 +63,9 @@ public:
     size_t length() const;
 
 
-    std::shared_ptr<MlxDoubleVector> normalizedMagnitude(MlxDoubleVector &signal);
+    std::shared_ptr<MlxDoubleVector> normalizedMagnitude(const MlxDoubleVector &signal);
 
-    std::shared_ptr<MlxDoubleVector> pwrSpectralDensity(MlxDoubleVector &signal, const double fs, const double df);
+    std::shared_ptr<MlxDoubleVector> pwrSpectralDensity(const MlxDoubleVector &signal, const double fs, const double df);
 
 
 
