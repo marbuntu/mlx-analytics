@@ -93,6 +93,12 @@ namespace mlx
         }
 
 
+        /**
+         * @brief   Access Vector Element at Index
+         * 
+         * @param idx 
+         * @return T& 
+         */
         T &operator[] (size_t idx)
         {
             if ((idx < 0 ) || (idx >= _inner.size()))
@@ -103,6 +109,13 @@ namespace mlx
             return _inner[idx];
         }
 
+
+        /**
+         * @brief   Returns Vector Element at Index
+         * 
+         * @param idx 
+         * @return T 
+         */
         T at(size_t idx) const
         {
             if ((idx < 0 ) || (idx >= _inner.size()))
@@ -114,6 +127,12 @@ namespace mlx
         }
 
 
+        /**
+         * @brief   Set Value for Element at specific Index
+         * 
+         * @param idx 
+         * @param value 
+         */
         void set(size_t idx, T value)
         {
             if (idx >= _inner.size()) return;
@@ -121,6 +140,11 @@ namespace mlx
         }
 
 
+        /**
+         * @brief   Vector Size
+         * 
+         * @return size_t 
+         */
         size_t size() const
         {
             return _inner.size();
@@ -164,67 +188,50 @@ namespace mlx
 
     /// ARITHMETIC FUNCTIONS
 
+    // Scalar
+
         MlxVector<T> operator+ (const T value) const
         {
             std::valarray<T> vec = _inner + value;
             return MlxVector<T>(vec);
         }
 
-
-        MlxVector<T> operator+ (const MlxVector<T> other) const
-        {
-            if (_inner.size() != other.size()) return MlxVector<T>(other.size());
-
-            MlxVector<T> vec(_inner);
-            vec += other;
-            return vec;
-        }
-
-
-        MlxVector<T> &operator+= (const T value)
-        {
-            _inner += value;
-            return *this;
-        }
-
-
-        MlxVector<T> &operator+= (const MlxVector<T> other)
-        {
-            if (_inner.size() != other.size()) return *this;
-
-            _inner += other._inner;
-            return *this;
-        }
-
-
+        
         MlxVector<T> operator- (const T value) const
         {
             std::valarray<T> vec = _inner - value;
             return MlxVector<T>(vec);
         }
 
-
-        MlxVector<T> &operator-= (const T value)
-        {
-            _inner -= value;
-            return *this;
-        }
-
-
+        
         MlxVector<T> operator* (const T value) const
         {
             std::valarray<T> vec = _inner * value;
             return MlxVector<T>(vec);
         }
 
-
-        MlxVector<T> operator* (const MlxVector<T>& other) const
+        
+        MlxVector<T> operator/ (const T value) const
         {
-            if (other->size() != _inner.size()) return MlxVector<T>(other.size());
+            //if (value == 0) return MlxVector<T>(_inner.size());
 
-            MlxVector<T> vect(_inner);
-            vect *= other;
-            return vect;
+            std::valarray<T> vec = _inner / value;
+            return MlxVector<T>(vec);
+        }
+
+    // Scalar, self assigned
+
+        MlxVector<T> &operator+= (const T value)
+        {
+            _inner += value;
+            return *this;
+        }
+        
+
+        MlxVector<T> &operator-= (const T value)
+        {
+            _inner -= value;
+            return *this;
         }
 
 
@@ -235,15 +242,94 @@ namespace mlx
         }
 
 
-        MlxVector<T> &operator *= (const MlxVector<T>& other)
+        MlxVector<T> &operator/= (const T value) 
+        {
+            // if (value == 0) return *this;
+
+            _inner /= value;
+            return *this;
+        }
+
+
+    // Vector
+
+        MlxVector<T> operator+ (const MlxVector<T>& other) const
+        {
+            if (_inner.size() != other.size()) return MlxVector<T>(other.size());
+
+            MlxVector<T> vec(_inner);
+            vec += other;
+            return vec;
+        }
+
+
+        MlxVector<T> operator- (const MlxVector<T>& other) const
+        {
+            if (_inner.size() != other.size()) return MlxVector<T>(other.size());
+
+            MlxVector<T> vec(_inner);
+            vec -= other;
+            return vec;
+        }
+
+
+        MlxVector<T> operator* (const MlxVector<T>& other) const
+        {
+            if (other.size() != _inner.size()) return MlxVector<T>(other.size());
+
+            MlxVector<T> vect(_inner);
+            vect *= other;
+            return vect;
+        }
+
+
+        MlxVector<T> operator/ (const MlxVector<T>& other) const
+        {
+            if (other.size() != _inner.size()) return MlxVector<T>(other.size());
+
+            MlxVector<T> vec(_inner);
+            vec /= other;
+            return vec;
+        }
+
+
+    // Vector, self assigned
+
+        MlxVector<T> &operator+= (const MlxVector<T>& other)
+        {
+            if (_inner.size() != other.size()) return *this;
+
+            _inner += other._inner;
+            return *this;
+        }
+
+
+        MlxVector<T> &operator-= (const MlxVector<T>& other)
+        {
+            if (_inner.size() != other.size()) return *this;
+
+            _inner -= other._inner;
+            return *this;
+        }
+
+
+        MlxVector<T> &operator*= (const MlxVector<T>& other)
         {
             if (other.size() != _inner.size()) return *this;
 
             _inner *= other._inner;
-
             return *this;
         }
 
+
+
+        MlxVector<T> &operator/= (const MlxVector<T>& other)
+        {
+            if ( !this->equal_size(other)) return *this;
+
+            _inner /= other._inner;
+            return *this;
+        }
 
 
     /// GENERAL FUNCTIONS
@@ -350,6 +436,29 @@ namespace mlx
         double stddev() const
         {
             return std::sqrt(this->variance());
+        }
+
+
+        /**
+         * @brief   Check for Occurence of Zero-Elements
+         * 
+         * @return true 
+         * @return false 
+         */
+        bool contains_zeros() const
+        {
+            if (std::find(std::begin(_inner), std::end(_inner), 0) != std::end(_inner))
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+
+        bool equal_size(const MlxVector<T>& other) const
+        {
+            return (other.size() == _inner.size());
         }
 
 
