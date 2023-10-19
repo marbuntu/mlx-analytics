@@ -45,7 +45,7 @@ public:
         VALUEPADDING = GSL_MOVSTAT_END_PADVALUE,
         TRUNCATE = GSL_MOVSTAT_END_TRUNCATE,
     } EdgeMode;
-    
+
 
     static const EdgeMode EdgeModeDefault = VALUEPADDING;
 
@@ -63,6 +63,12 @@ public:
 
     static MlxDoubleVector Mean(const MlxDoubleVector& vect, size_t width, size_t stride);
     static MlxDoubleVector Mean(const MlxDoubleVector& vect, size_t width, size_t stride, EdgeMode mode);
+
+
+    static MlxDoubleVector MAD(const MlxDoubleVector& vect, size_t width, size_t stride);
+    static MlxDoubleVector MAD(const MlxDoubleVector& vect, size_t width, size_t stride, EdgeMode mode);
+
+
 
 
 protected:

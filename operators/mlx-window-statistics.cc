@@ -129,6 +129,26 @@ namespace mlx
     }
 
 
+    MlxDoubleVector MlxMovingWindow::MAD(const MlxDoubleVector& vect, size_t width, size_t stride)
+    {
+        return MAD(vect, width, stride, EdgeModeDefault);
+    }
+
+
+    MlxDoubleVector MlxMovingWindow::MAD(const MlxDoubleVector& vect, size_t width, size_t stride, EdgeMode mode)
+    {
+        gsl_movstat_workspace *wspc = _getWorkspace(width)->get();
+
+        gsl_vector *in = vect.toGslVector();
+        gsl_vector *xmedian = gsl_vector_alloc(vect.size());
+        MlxDoubleVector out(vect.size());
+        
+        gsl_movstat_mad((gsl_movstat_end_t) mode, in, xmedian, out.asGslVector(), wspc);
+
+        return out;
+    }
+
+
     MlxMovingWindowWorkspace* MlxMovingWindow::_getWorkspace(size_t N)
     {
         if (auto search = _workspaces.find(N); search != _workspaces.end())
