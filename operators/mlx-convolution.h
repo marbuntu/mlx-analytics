@@ -58,5 +58,9 @@ private:
 
 };
 
+void run_gsl_convolution_test();
+
+MlxDoubleVector convolve1D(const MlxDoubleVector& signal, const MlxDoubleVector& kernel);
+
     
 } /*    namepace mlx    */

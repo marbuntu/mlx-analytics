@@ -64,13 +64,23 @@ namespace mlx
     }
 
 
-    MlxSOSFilter* MlxSOSFilter::addStage(double b0, double b1, double b2, double a1, double a2)
+    MlxSOSFilter& MlxSOSFilter::addStage(double b0, double b1, double b2, double a1, double a2)
     {
         _filterSet.push_back(
             MlxSOSFilterStage(b0, b1, b2, a1, a2)
         );
 
-        return this;
+        return *this;
+    }
+
+
+    MlxSOSFilter& MlxSOSFilter::addStage(const MlxSOSFilterStage& stage)
+    {
+        _filterSet.push_back(
+            stage
+        );
+
+        return *this;
     }
 
 
@@ -100,19 +110,19 @@ namespace mlx
             filter->addStage(
                 5.128132645416496e-13, 1.0256265290832993e-12, 5.128132645416496e-13, -1.6358161595128016, 0.6694470835583565
             )
-            ->addStage(
+            .addStage(
                 1.0, 2.0, 1.0, -1.6544507637455192, 0.6884647986656827
             )
-            ->addStage(
+            .addStage(
                 1.0, 2.0, 1.0, -1.6916794338709686, 0.7264588571081657
             )
-            ->addStage(
+            .addStage(
                 1.0, 2.0, 1.0, -1.7472829046575309, 0.7832054857562134
             )
-            ->addStage(
+            .addStage(
                 1.0, 2.0, 1.0,  -1.8205716411956112, 0.8580009734763099
             )
-            ->addStage(
+            .addStage(
                 1.0, 2.0, 1.0,  -1.9099233994325144, 0.9491897243221484
             );
 
@@ -139,22 +149,22 @@ namespace mlx
             filter->addStage(
                 1.3164591487194416e-12, 2.632918297438883e-12, 1.3164591487194416e-12, -1.4967220429743726, 0.5604402298082104
             )
-            ->addStage(
+            .addStage(
                 1.0, 2.0, 1.0, -1.5031754338000556, 0.5684943341991748
             )
-            ->addStage(
+            .addStage(
                 1.0, 2.0, 1.0, -1.5165678617134124, 0.5852950144369798
             )
-            ->addStage(
+            .addStage(
                 1.0, 2.0, 1.0, -1.5380229114586013, 0.6124571676498912
             )
-            ->addStage(
+            .addStage(
                 1.0, 2.0, 1.0, -1.5697380725036985, 0.6531803028874344
             )
-            ->addStage(
+            .addStage(
                 1.0, 2.0, 1.0, -1.6162389834768125, 0.7141683430722784
             )
-            ->addStage(
+            .addStage(
                 1.0, 2.0, 1.0, -1.6894048345910613, 0.8133772402519509
             );
 
@@ -164,22 +174,22 @@ namespace mlx
             filter->addStage(
                 6.346130800455662e-09, 1.2692261600911324e-08, 6.346130800455662e-09, -1.0875854483710024, 0.2967242585300517
             )
-            ->addStage(
+            .addStage(
                 1.0, 2.0, 1.0, -1.0931310231047813, 0.3080182221218568
             )
-            ->addStage(
+            .addStage(
                 1.0, 2.0, 1.0, -1.1045919801935986, 0.3317747936513281
             )
-            ->addStage(
+            .addStage(
                 1.0, 2.0, 1.0, -1.1228090927121035, 0.37074660344375854
             )
-            ->addStage(
+            .addStage(
                 1.0, 2.0, 1.0, -1.1493766733713506, 0.43047508936230816
             )
-            ->addStage(
+            .addStage(
                 1.0, 2.0, 1.0, -1.1874264993018948, 0.5228171438494588
             )
-            ->addStage(
+            .addStage(
                 1.0, 2.0, 1.0, -1.244638184591471, 0.6803072537872193
             );
 
@@ -189,6 +199,19 @@ namespace mlx
             break;
         }
 
+
+        return filter;
+    }
+
+
+    std::shared_ptr<MlxSOSFilter> MlxSOSFilterFactory::getFilter_generic(const std::vector<MlxSOSFilterStage>& stages)
+    {
+        std::shared_ptr<MlxSOSFilter> filter = std::make_shared<MlxSOSFilter>();
+
+        for (const auto& s : stages)
+        {
+            filter->addStage(s);
+        }
 
         return filter;
     }

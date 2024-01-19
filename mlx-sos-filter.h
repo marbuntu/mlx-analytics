@@ -4,6 +4,7 @@
 #pragma once
 
 #include <vector>
+#include <set>
 #include <memory>
 
 
@@ -76,7 +77,11 @@ public:
 
     double filter(double sample);
 
-    MlxSOSFilter* addStage(double b0, double b1, double b2, double a1, double a2);
+    //MlxSOSFilter* addStage(double b0, double b1, double b2, double a1, double a2);
+
+    MlxSOSFilter& addStage(double b0, double b1, double b2, double a1, double a2);
+
+    MlxSOSFilter& addStage(const MlxSOSFilterStage& stage);
 
 
 protected:
@@ -112,6 +117,15 @@ public:
      * @return  std::shared_ptr<MlxSOSFilter> 
      */
     static std::shared_ptr<MlxSOSFilter> getFilter_Bessel(fc_fs_ratio fcsr);
+
+
+    /**
+     * @brief Returns a Digital Filter based on the provided set of coefficients
+     * 
+     * @param stages    Sets for SOS Filter Stages
+     * @return std::shared_ptr<MlxSOSFilter> 
+     */
+    static std::shared_ptr<MlxSOSFilter> getFilter_generic(const std::vector<MlxSOSFilterStage>& stages);
 
 protected:
 

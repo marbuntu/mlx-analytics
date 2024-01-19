@@ -92,7 +92,6 @@ namespace mlx {
         // **2 for all Vector Elements
         gsl_vector_mul(inp, inp);
 
-
         std::shared_ptr<MlxDoubleVector> res = std::make_shared<MlxDoubleVector>(inp->size);
 
         size_t i = 1;
@@ -144,6 +143,8 @@ namespace mlx {
         }   
 
         std::shared_ptr<MlxDoubleVector> res = std::make_shared<MlxDoubleVector>(integ);
+
+        gsl_vector_free(inp);
 
         return res;
     }
